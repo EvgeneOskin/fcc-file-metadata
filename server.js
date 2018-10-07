@@ -30,14 +30,31 @@ app.get("/", (request, response) => {
   response.sendFile(__dirname + '/views/index.html')
 })
 
-app.post('/api/exercise/new-user', (req, res) => {
+app.post('/api/exercise/new-user', async (req, res) => {
   const {username } = req.body
-  const {_id} = 
-  res.json({}
+  try {
+    const {_id} = await User.findOneAndUpdate(
+      { username }, { $setOnInsert: { username }},
+      {
+        new: true,   // return new doc if one is upserted
+        upsert: true // insert the document if it does not exist
+      }
+    )
+    res.json({username, id: _id})
+  }catch(e) {
+    res.statusCode = 400
+    res.json({error: 'Can not create a user'})
+  }
 })
 
 app.post('/api/exercise/add', (req,res) => {
-
+  const {username, 
+  {username: { type: String, required: true },
+  count: Number,
+  log: [
+    {description: String, duration: Number, date: Date}
+  ],
+  }
 })
 
 app.get('/api/exercise/log', (req, res) => {
