@@ -17,8 +17,8 @@ const UserSchema = new mongoose.Schema({
     {description: String, duration: Number, date: Date}
   ],
 });
-
 const User = mongoose.model('User', UserSchema);
+User.createIndexes()
 
 app.use(bodyParser.json({ type: 'application/*+json' }))
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -42,7 +42,9 @@ app.post('/api/exercise/new-user', async (req, res) => {
 })
 
 app.post('/api/exercise/add', async (req, res) => {
-  const {userId, description, duration, date} = req.body
+  const {userId, description, durationStr, dateStr=''} = req.body
+  const date = dateStr ? new Date(dateStr) : new Date()
+  const duration = parseInt(durationStr)
   try {
     const data = await User.findOneAndUpdate(
       { _id: userId },
@@ -55,7 +57,8 @@ app.post('/api/exercise/add', async (req, res) => {
     res.json({data})
   } catch(e) {
     res.statusCode = 400
-    res.json({error: 'can not create an sercise'})
+    console.error(e)
+    res.json({error: 'can not create an exsercise'})
   }
 })
 
