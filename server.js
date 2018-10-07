@@ -30,6 +30,23 @@ app.get("/", (request, response) => {
   response.sendFile(__dirname + '/views/index.html')
 })
 
+app.post('/api/exercise/new-user', (req, res) => {
+
+})
+
+app.post('/api/exercise/add', (req,res) => {
+
+})
+
+app.get('/api/exercise/log', (req, res) => {
+  const {
+    userId,
+    from=,
+    to=,
+    limit=
+  } = req.query
+
+})
 
 // listen for requests :)
 const listener = app.listen(process.env.PORT, () => {
