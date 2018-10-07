@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URI);
 
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true },
+  username: { type: String, required: true, unique: true,  dropDups: true  },
   count: Number,
   log: [
     {description: String, duration: Number, date: Date}
@@ -33,13 +33,7 @@ app.get("/", (request, response) => {
 app.post('/api/exercise/new-user', async (req, res) => {
   const {username } = req.body
   try {
-    const {_id} = await User.findOneAndUpdate(
-      { username }, { $setOnInsert: { username }},
-      {
-        new: true,   // return new doc if one is upserted
-        upsert: true // insert the document if it does not exist
-      }
-    )
+    const {_id} = await User.create({ username })
     res.json({username, id: _id})
   }catch(e) {
     res.statusCode = 400
@@ -50,15 +44,15 @@ app.post('/api/exercise/new-user', async (req, res) => {
 app.post('/api/exercise/add', async (req, res) => {
   const {userId, description, duration, date} = req.body
   try {
-  const data = await User.findOneAndUpdate(
-    { _id: userId },
-    {
-      $inc: { count: 1 },
-      $push: {log: {description, duration, date}}
-    },
-    {upsert: true}
-  )
-  res.json({})
+    const data = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $inc: { count: 1 },
+        $push: {log: {description, duration, date}}
+      },
+      {upsert: true}
+    )
+    res.json({data})
   } catch(e) {
     res.statusCode = 400
     res.json({error: 'can not create an sercise'})
