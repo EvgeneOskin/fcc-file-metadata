@@ -76,10 +76,10 @@ app.get('/api/exercise/log', async (req, res) => {
   try {
     let query = User.findById(userId)
     if (from) {
-      query = query.limit(parseInt(limit))
+      query = query.find({'logs.date': {$gt: new Date(from)}})
     }
     if (to) {
-      query = query.limit(parseInt(limit))
+      query = query.find({'logs.date': {$lt: new Date(to)}})
     }
     if (limit) {
       query = query.limit(parseInt(limit))
