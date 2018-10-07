@@ -31,7 +31,9 @@ app.get("/", (request, response) => {
 })
 
 app.post('/api/exercise/new-user', (req, res) => {
-
+  const {username } = req.body
+  const {_id} = 
+  res.json({}
 })
 
 app.post('/api/exercise/add', (req,res) => {
@@ -41,11 +43,11 @@ app.post('/api/exercise/add', (req,res) => {
 app.get('/api/exercise/log', (req, res) => {
   const {
     userId,
-    from=,
-    to=,
-    limit=
+    from='',
+    to='',
+    limit=null
   } = req.query
-
+  
 })
 
 // listen for requests :)
