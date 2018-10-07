@@ -43,17 +43,25 @@ app.post('/api/exercise/new-user', async (req, res) => {
     res.json({username, id: _id})
   }catch(e) {
     res.statusCode = 400
-    res.json({error: 'Can not create a user'})
+    res.json({error: 'Cannot create a user'})
   }
 })
 
-app.post('/api/exercise/add', (req,res) => {
-  const {username, 
-  {username: { type: String, required: true },
-  count: Number,
-  log: [
-    {description: String, duration: Number, date: Date}
-  ],
+app.post('/api/exercise/add', async (req, res) => {
+  const {userId, description, duration, date} = req.body
+  try {
+  const data = await User.findOneAndUpdate(
+    { _id: userId },
+    {
+      $inc: { count: 1 },
+      $push: {log: {description, duration, date}}
+    },
+    {upsert: true}
+  )
+  res.json({})
+  } catch(e) {
+    res.statusCode = 400
+    res.json({error: 'can not create an sercise'})
   }
 })
 
