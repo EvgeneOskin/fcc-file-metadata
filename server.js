@@ -42,7 +42,11 @@ app.post('/api/exercise/new-user', async (req, res) => {
 })
 
 app.post('/api/exercise/add', async (req, res) => {
-  const {userId, description, durationStr, dateStr=''} = req.body
+  const {
+    userId, description, 
+    duration: durationStr, 
+    date: dateStr=''
+  } = req.body
   const date = dateStr ? new Date(dateStr) : new Date()
   const duration = parseInt(durationStr)
   try {
@@ -52,7 +56,7 @@ app.post('/api/exercise/add', async (req, res) => {
         $inc: { count: 1 },
         $push: {log: {description, duration, date}}
       },
-      {upsert: true}
+      {upsert: true, new: true}
     )
     res.json({data})
   } catch(e) {
@@ -62,14 +66,31 @@ app.post('/api/exercise/add', async (req, res) => {
   }
 })
 
-app.get('/api/exercise/log', (req, res) => {
+app.get('/api/exercise/log', async (req, res) => {
   const {
     userId,
     from='',
     to='',
     limit=null
   } = req.query
-  
+  try {
+    let query = User.findById(userId)
+    if (from) {
+      query = query.limit(parseInt(limit))
+    }
+    if (to) {
+      query = query.limit(parseInt(limit))
+    }
+    if (limit) {
+      query = query.limit(parseInt(limit))
+    }
+    const data = await query.exec()
+    res.json(data)
+  } catch(e) {
+    res.statusCode = 400
+    console.error(e)
+    res.json({error: 'can not list logs'})
+  }
 })
 
 // listen for requests :)
