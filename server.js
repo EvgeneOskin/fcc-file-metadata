@@ -75,16 +75,21 @@ app.get('/api/exercise/log', async (req, res) => {
   } = req.query
   try {
     let query = User.findById(userId)
-    if (from) {
-      query = query.find({'logs.date': {$gt: new Date(from)}})
-    }
-    if (to) {
-      query = query.find({'logs.date': {$lt: new Date(to)}})
-    }
-    if (limit) {
-      query = query.limit(parseInt(limit))
-    }
     const data = await query.exec()
+    const fromDate = from && new Date(from)
+    const toDate = to && new Date(to)
+    
+    data.log = data.log.filter(({ date }) => {
+      const d = new Date(date)
+      const isValid = (
+        (!fromDate || d - fromDate> 0) &&
+        (!toDate || toDate - d > 0)
+      )
+      return isValid
+    })
+    if (limit) {
+      data.log = data.log.slice(0, parseInt(limit))
+    }
     res.json(data)
   } catch(e) {
     res.statusCode = 400
